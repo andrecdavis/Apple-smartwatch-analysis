@@ -1,15 +1,45 @@
-# Apple Smartwatch Analysis
+# Plated in Gold: What Drives Apple Smartwatch Resale Prices?
 
-We analyze thousands of third-party Apple smartwatch listings collected from online marketplaces. We analyze factors such as model, 
+We analyze thousands of third-party Apple smartwatch listings collected from online marketplaces. We focus on smartwatch model, premium markers (special editions and materials), aftermarket additions (such as 24k gold plating), list country, and international shipping availibility.
 
 
 
 
 Our main question is: Which features drive price?
 
+The answer is that aftermarket gold-plating and special edition models contribute most of the dollars to the overall market. Looking only at retail models, i.e. those with no after-market additions, we still see special editions popping up, along with country of origin, model number, and premium options such as titanium case.
+
+## At a Glance
+Here are some really cool visuals
+
+
+<p align="center">
+  <img src="images/md_price_by_model_2.png" width="40%" height=300>
+  <img src="images/md_gold_cloud.png" width="40%" height=300>
+</p>
+
+<p align="center">
+  <img src="images/md_model_by_count.png" height=500>
+</p>
+
+
+<p align="center">
+  <img src="images/md_country_donut.png" width="35%">
+  <img src="images/md_country_means.png" width="35%">
+</p>
+
+<p align="center">
+  <img src="images/feature_importance.png" width="70%">
+</p>
+
+<p align="center">
+  <img src="images/md_listing_type_count.png" width="35%">
+  <img src="images/md_listing_type_mean.png" width="35%">
+</p>
 
 ## Table of Contents
 
+- [At a Glance](#at-a-glance)
 - [Overview](#overview)
 - [Dataset](#dataset)
 - [Methodology](#methodology)
@@ -104,8 +134,8 @@ Analysis methods
 
 
 ## Regression Model
-  Show OLS model results
-    -interpret coefficients
+Show OLS model results
+  - interpret coefficients
 
 
 
@@ -120,7 +150,7 @@ Most important takeaways
 
 ## Limitations
 Missing variables
-  Post description
+  - Post description 🔋
 
 Listings, not sales
 

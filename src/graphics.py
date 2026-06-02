@@ -9,7 +9,7 @@ def plot_price_density(df, model_list = [
     'ultra 3', 'series 9', 'ultra 2',
     'series 10', 'series 11',
     'ultra 1'
-]):
+], save_path = None):
     
     order = model_list
 
@@ -39,6 +39,10 @@ def plot_price_density(df, model_list = [
     plt.ylabel("Density")
     plt.legend()
     plt.tight_layout()
+    
+    if save_path is not None:
+        fig.savefig(save_path, bbox_inches='tight', dpi=300)
+        
     plt.show()
     
 
@@ -127,7 +131,14 @@ def plot_price_distribution(
     plt.show()    
     
 
-def plot_resale_comparison(df, model_list, method = 'mean', figure_size = (16,9)):
+def plot_resale_comparison(
+    df, 
+    model_list, 
+    method = 'mean', 
+    figure_size = (16,9), 
+    save_path = None
+):
+    
     retail_master = {
         'series 0': 349,
         'series 1': 269,
@@ -249,11 +260,9 @@ def plot_resale_comparison(df, model_list, method = 'mean', figure_size = (16,9)
     plt.legend()
     plt.tight_layout()
     
-    plt.savefig(
-        'images/retail_comparison.png',
-        bbox_inches='tight',
-        dpi=300
-    )
+    
+    if save_path is not None:
+        fig.savefig(save_path, bbox_inches='tight', dpi=300)
     
     plt.show()
     
@@ -650,7 +659,8 @@ def plot_gold_percentage(
 def display_model_results(
     results,
     top_n=20,
-    figsize=(10, 8)
+    figsize=(10, 8),
+    save_path = None
 ):
     """
     Display model performance + feature importance.
@@ -694,5 +704,8 @@ def display_model_results(
     plt.xticks(x, plot_df['feature'], rotation=45, ha='right')
 
     plt.tight_layout()
+    
+    if save_path is not None:
+        plt.savefig(save_path, bbox_inches='tight', dpi=300)
 
     plt.show()
