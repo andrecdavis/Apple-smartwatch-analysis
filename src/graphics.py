@@ -656,56 +656,139 @@ def plot_gold_percentage(
     plt.show()
     
     
+# def display_model_results(
+#     results,
+#     top_n=20,
+#     figsize=(10, 8),
+#     save_path = None
+# ):
+#     """
+#     Display model performance + feature importance.
+#     """
+
+#     coef_df = results['feature_importance'].copy()
+
+#     print(f"R²:  {results['r2']:.3f}")
+#     print(f"MAE: ${results['mae']:,.2f}")
+
+#     # -----------------------------------------------------
+#     # Plot
+#     # -----------------------------------------------------
+
+#     plot_df = coef_df.head(top_n).copy()
+
+#     plt.figure(figsize=figsize)
+
+#     palette = sns.color_palette("colorblind")
+
+#     # Create colors list: negative = palette[8] (red), positive = palette[0] (blue)
+#     colors = [palette[0] if coef < 0 else palette[1] for coef in plot_df['coefficient']]
+
+#     x = range(len(plot_df))
+
+#     plt.bar(
+#         x,
+#         plot_df['coefficient'],
+#         color=colors,
+#         edgecolor='none'
+#     )
+
+#     plt.axhline(0, linestyle='--')
+
+#     plt.title('Largest Effects on Price')
+
+#     plt.xlabel('Feature')
+
+#     plt.ylabel('Model Coefficient')
+
+#     plt.xticks(x, plot_df['feature'], rotation=45, ha='right')
+
+#     plt.tight_layout()
+    
+#     if save_path is not None:
+#         plt.savefig(save_path, bbox_inches='tight', dpi=300)
+
+#     plt.show()
+    
+    
+    
+    
+    
+    
+    
+    
 def display_model_results(
     results,
     top_n=20,
     figsize=(10, 8),
-    save_path = None
+    save_path=None
 ):
     """
-    Display model performance + feature importance.
-    """
+    Display model performance and feature importance.
 
+    Bars show standardised coefficients (comparable across features).
+    Blue = positive effect on price, red = negative effect.
+    Features sorted by absolute standardised effect, largest at top.
+    """
     coef_df = results['feature_importance'].copy()
 
     print(f"R²:  {results['r2']:.3f}")
     print(f"MAE: ${results['mae']:,.2f}")
 
-    # -----------------------------------------------------
-    # Plot
-    # -----------------------------------------------------
-
-    plot_df = coef_df.head(top_n).copy()
-
-    plt.figure(figsize=figsize)
+    # ------------------------------------------------------------------
+    # Select top_n by absolute standardised effect, then sort so the
+    # largest bar sits at the top of the horizontal chart.
+    # ------------------------------------------------------------------
+    plot_df = (
+        coef_df
+        .nlargest(top_n, 'abs_std_effect')
+        .sort_values('abs_std_effect', ascending=True)   # ascending → largest at top in barh
+    )
 
     palette = sns.color_palette("colorblind")
+    colors = [palette[0] if coef >= 0 else palette[3] for coef in plot_df['std_coefficient']]
+    # palette[0] = blue (positive effect), palette[3] = red (negative effect)
 
-    # Create colors list: negative = palette[8] (red), positive = palette[0] (blue)
-    colors = [palette[0] if coef < 0 else palette[1] for coef in plot_df['coefficient']]
+    fig, ax = plt.subplots(figsize=figsize)
 
-    x = range(len(plot_df))
-
-    plt.bar(
-        x,
-        plot_df['coefficient'],
+    ax.barh(
+        plot_df['feature'],
+        plot_df['std_coefficient'],
         color=colors,
         edgecolor='none'
     )
 
-    plt.axhline(0, linestyle='--')
-
-    plt.title('Largest Effects on Price')
-
-    plt.xlabel('Feature')
-
-    plt.ylabel('Model Coefficient')
-
-    plt.xticks(x, plot_df['feature'], rotation=45, ha='right')
-
+    ax.axvline(0, color='black', linewidth=0.8, linestyle='--')
+    ax.set_title('Largest Effects on Price', fontsize=13)
+    ax.set_xlabel('Standardised Coefficient (SD units)')
+    ax.set_ylabel('')
     plt.tight_layout()
-    
+
     if save_path is not None:
         plt.savefig(save_path, bbox_inches='tight', dpi=300)
 
     plt.show()
+
+    table_df = (
+        coef_df
+        .nlargest(top_n, 'abs_std_effect')
+        [['feature', 'coefficient', 'std_coefficient', 'abs_std_effect']]
+        .sort_values('abs_std_effect', ascending=False)
+    )
+
+    table_df['percent_effect'] = 100 * np.expm1(table_df['coefficient'])
+
+    table_df = table_df.rename(columns={
+        'std_coefficient': 'std_effect'
+    })
+
+    print(
+        table_df[['feature', 'coefficient', 'percent_effect', 'std_effect']]
+        .to_string(
+            index=False,
+            formatters={
+                'percent_effect': '{:+.1f}%'.format,
+                'std_effect': '{:.3f}'.format
+            }
+        )
+    )    
